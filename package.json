@@ -5,7 +5,8 @@
   "main": "teste.js",
   "scripts": {
     "test": "jest",
-    "start:prod": "tsc && npm start",
+    "build": "tsc",
+    "start:prod": "npm install && npm run build && npm start",
     "start:dev": "tsc && nodemon --exec ts-node server.ts"
   },
   "keywords": [],
