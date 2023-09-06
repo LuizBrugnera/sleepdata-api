@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { InputData, timeToDecimal, transformData } from "../utils/utilsGlobal";
 import mongoose from "mongoose";
 import { sleepDataModel } from "../models/SleepData";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const SleepDataService = {
   getAll: async (req: Request, res: Response) => {
@@ -19,20 +22,22 @@ export const SleepDataService = {
     res.status(200).json(sleepData);
   },
   create: async (req: Request, res: Response) => {
+    if (req.body.password !== process.env.PASSWORD) {
+      return res.status(403).json({ error: "Without permission" });
+    }
     const sleepTimeDecimal = timeToDecimal(req.body.sleepTime);
     const date = req.body.date;
     const name = req.body.name;
 
     const existingSleepData = await sleepDataModel.findOneAndUpdate(
       { date: date, name: name },
-      { $inc: { sleepTime: sleepTimeDecimal } }, 
+      { $inc: { sleepTime: sleepTimeDecimal } },
       { new: true, upsert: true }
     );
 
     if (existingSleepData) {
-      res.status(200).json(existingSleepData); 
+      res.status(200).json(existingSleepData);
     } else {
-      
       const sleepData = {
         _id: new mongoose.Types.ObjectId(),
         sleepTime: sleepTimeDecimal,
@@ -40,10 +45,13 @@ export const SleepDataService = {
         name: name,
       };
       const newSleepData = await sleepDataModel.create(sleepData);
-      res.status(201).json(newSleepData); 
+      res.status(201).json(newSleepData);
     }
   },
   update: async (req: Request, res: Response) => {
+    if (req.body.password !== process.env.PASSWORD) {
+      return res.status(403).json({ error: "Without permission" });
+    }
     const sleepDataId = req.params.id;
 
     const sleepDataFind = await sleepDataModel.findById(sleepDataId);
@@ -68,6 +76,9 @@ export const SleepDataService = {
     res.status(200).json(updatedSleepData);
   },
   delete: async (req: Request, res: Response) => {
+    if (req.body.password !== process.env.PASSWORD) {
+      return res.status(403).json({ error: "Without permission" });
+    }
     const sleepDataId = req.params.id;
     const sleepDataToDelete = await sleepDataModel.findById(sleepDataId);
 
