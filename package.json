@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "start:prod": "npm install && npm run build && npm start",
+    "start:prod": "npm run build && npm start",
     "start:dev": "tsc && nodemon --exec ts-node server.ts"
   },
   "keywords": [],
