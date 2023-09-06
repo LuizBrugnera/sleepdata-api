@@ -28,10 +28,7 @@ export function transformData(data: InputData[]): OutputData[] {
       };
     }
 
-    const sleepTimeString =
-      item.sleepTime % 1 === 0
-        ? item.sleepTime.toString()
-        : Math.floor(item.sleepTime) + ".5";
+    const sleepTimeString = item.sleepTime.toFixed(2).toString();
 
     switch (item.name) {
       case "Everson":
@@ -66,5 +63,6 @@ export function transformData(data: InputData[]): OutputData[] {
 
 export function timeToDecimal(time: string): number {
   const [hours, minutes] = time.split(":").map(Number);
-  return hours + minutes / 60;
+  const decimal = hours + minutes / 60;
+  return parseFloat(decimal.toFixed(2));
 }
