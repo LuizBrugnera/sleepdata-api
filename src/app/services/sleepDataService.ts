@@ -19,14 +19,29 @@ export const SleepDataService = {
     res.status(200).json(sleepData);
   },
   create: async (req: Request, res: Response) => {
-    const sleepData = {
-      _id: new mongoose.Types.ObjectId(),
-      sleepTime: timeToDecimal(req.body.sleepTime),
-      date: req.body.date,
-      name: req.body.name,
-    };
-    const newSleepData = await sleepDataModel.create(sleepData);
-    res.status(201).json(newSleepData);
+    const sleepTimeDecimal = timeToDecimal(req.body.sleepTime);
+    const date = req.body.date;
+    const name = req.body.name;
+
+    const existingSleepData = await sleepDataModel.findOneAndUpdate(
+      { date: date, name: name },
+      { $inc: { sleepTime: sleepTimeDecimal } }, 
+      { new: true, upsert: true }
+    );
+
+    if (existingSleepData) {
+      res.status(200).json(existingSleepData); 
+    } else {
+      
+      const sleepData = {
+        _id: new mongoose.Types.ObjectId(),
+        sleepTime: sleepTimeDecimal,
+        date: date,
+        name: name,
+      };
+      const newSleepData = await sleepDataModel.create(sleepData);
+      res.status(201).json(newSleepData); 
+    }
   },
   update: async (req: Request, res: Response) => {
     const sleepDataId = req.params.id;
